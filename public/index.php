@@ -4,12 +4,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controller\IndexController;
 use App\Controller\ProductController;
+use App\DependencyInjection\Container;
 use App\Entity\User;
 use App\Exception\RouteNotFoundException;
+use App\Repository\ProductRepository;
 use App\Routing\Route;
 use App\Routing\Router;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\ORM\ORMSetup;
 use Symfony\Component\Dotenv\Dotenv;
 use Twig\Environment;
@@ -42,18 +45,26 @@ $isDevMode = $_ENV['APP_ENV'] === 'dev';
 
 $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
 $connection = DriverManager::getConnection($dbParams, $config);
-$entityManager = new EntityManager($connection, $config);
+try {
+    $entityManager = new EntityManager($connection, $config);
+} catch (MissingMappingDriverImplementation $e) {
+    echo $e->getCode() . ' - ' . $e->getMessage();
+}
+
+$productRepository = new ProductRepository($entityManager);
+
+
 
 // CREATE USER ---------------------------------------------------------------------
 
-$user = new User();
-$user
-    ->setEmail("something@something.com")
-    ->setPassword(password_hash("test", PASSWORD_BCRYPT))
-;
-
-$entityManager->persist($user);
-$entityManager->flush();
+//$user = new User();
+//$user
+//    ->setEmail("something@something.com")
+//    ->setPassword(password_hash("test", PASSWORD_BCRYPT))
+//;
+//
+//$entityManager->persist($user);
+//$entityManager->flush();
 
 // TWIG ---------------------------------------------------------------------
 
@@ -63,10 +74,18 @@ $twig = new Environment($loader, [
     'debug' => $_ENV['APP_ENV'] === 'dev'
 ]);
 
+// SERVICES ---------------------------------------------------------------------
 
+$container = new Container();
+
+$container
+    ->set(Environment::class, $twig)
+    ->set(EntityManager::class, $entityManager)
+    ->set(ProductRepository::class, $productRepository);
 
 // ROUTER ---------------------------------------------------------------------
-$router = new Router($twig);
+
+$router = new Router($container);
 
 $router
     ->addRoute(
@@ -74,6 +93,9 @@ $router
     )
     ->addRoute(
         new Route('/contact', 'contact', 'GET', IndexController::class, 'contact')
+    )
+    ->addRoute(
+        new Route('/products/new', 'products_new', 'GET', ProductController::class, 'new')
     )
     ->addRoute(
         new Route('/products', 'products_list', 'GET', ProductController::class, 'list')
