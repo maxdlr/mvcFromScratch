@@ -2,14 +2,22 @@
 
 namespace App\Controller;
 
-class IndexController
+class IndexController extends AbstractController
 {
     public function home(): string
     {
-        echo 'page home';
+        $message = 'Page Home';
+
+        return $this->twig->render('index/home.html.twig', [
+            'message' => $message
+        ]);
     }
     public function contact() : string
     {
-        echo 'page contact';
+        $message = 'Page Contact';
+
+        return $this->twig->render('index/contact.html.twig', [
+            'message' => $message
+        ]);
     }
 }
