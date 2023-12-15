@@ -49,6 +49,7 @@ try {
 } catch (\Doctrine\DBAL\Exception $e) {
     echo $e->getCode() . ' - ' . $e->getMessage();
 }
+
 try {
     $entityManager = new EntityManager($connection, $config);
 } catch (MissingMappingDriverImplementation $e) {
@@ -56,8 +57,6 @@ try {
 }
 
 $productRepository = new ProductRepository($entityManager);
-
-
 
 // CREATE USER ---------------------------------------------------------------------
 
@@ -94,20 +93,11 @@ try {
 // ROUTER ---------------------------------------------------------------------
 
 $router = new Router($container);
-$router->extractRoutesFromAttributes();
-//$router
-//    ->addRoute(
-//        new Route('/', 'home', 'GET', IndexController::class, 'home')
-//    )
-//    ->addRoute(
-//        new Route('/contact', 'contact', 'GET', IndexController::class, 'contact')
-//    )
-//    ->addRoute(
-//        new Route('/products/new', 'products_new', 'GET', ProductController::class, 'new')
-//    )
-//    ->addRoute(
-//        new Route('/products', 'products_list', 'GET', ProductController::class, 'list')
-//    );
+try {
+    $router->extractRoutesFromAttributes();
+} catch (ReflectionException $e) {
+    echo $e->getCode() . ' - ' . $e->getMessage();
+}
 
 //  ---------------------------------------------------------------------
 
