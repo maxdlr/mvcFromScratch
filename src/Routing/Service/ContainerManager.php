@@ -4,7 +4,6 @@ namespace App\Routing\Service;
 
 use App\DependencyInjection\Container;
 use App\DependencyInjection\ServiceExistsException;
-use App\Repository\ProductRepository;
 use App\Routing\Attribute\AttributeManager;
 use Doctrine\ORM\EntityManager;
 use Exception;
