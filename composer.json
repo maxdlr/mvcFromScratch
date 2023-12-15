@@ -24,7 +24,6 @@
         "symfony/cache": "^7.0",
         "symfony/dotenv": "^7.0",
         "twig/twig": "^3.8",
-        "psr/container": "^2.0",
-        "symfony/validator": "^7.0"
+        "psr/container": "^2.0"
     }
 }

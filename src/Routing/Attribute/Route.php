@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Routing;
+namespace App\Routing\Attribute;
 
+use Attribute;
+
+#[Attribute]
 class Route
 {
     public function __construct(
         private string $uri,
         private string $name,
         private string $httpMethod,
-        private string $controllerClass,
-        private string $controllerMethod
     )
     {
     }
@@ -24,26 +25,8 @@ class Route
         return $this->name;
     }
 
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
     public function getHttpMethod(): string
     {
         return $this->httpMethod;
     }
-
-    public function getControllerClass(): string
-    {
-        return $this->controllerClass;
-    }
-
-    public function getControllerMethod(): string
-    {
-        return $this->controllerMethod;
-    }
-
-
-
 }

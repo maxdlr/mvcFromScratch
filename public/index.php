@@ -5,10 +5,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use App\Controller\IndexController;
 use App\Controller\ProductController;
 use App\DependencyInjection\Container;
-use App\Entity\User;
+use App\DependencyInjection\ServiceExistsException;
 use App\Exception\RouteNotFoundException;
 use App\Repository\ProductRepository;
-use App\Routing\Route;
+use App\Routing\Attribute\Route;
 use App\Routing\Router;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
@@ -44,11 +44,15 @@ $paths = [__DIR__ . '/../src/Entity'];
 $isDevMode = $_ENV['APP_ENV'] === 'dev';
 
 $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
-$connection = DriverManager::getConnection($dbParams, $config);
+try {
+    $connection = DriverManager::getConnection($dbParams, $config);
+} catch (\Doctrine\DBAL\Exception $e) {
+    echo $e->getCode() . ' - ' . $e->getMessage();
+}
 try {
     $entityManager = new EntityManager($connection, $config);
 } catch (MissingMappingDriverImplementation $e) {
-    echo $e->getCode() . ' - ' . $e->getMessage();
+    echo $e->getCode() . ' - ' . $e->getMessage() . '<br />' . var_dump($e);
 }
 
 $productRepository = new ProductRepository($entityManager);
@@ -78,28 +82,32 @@ $twig = new Environment($loader, [
 
 $container = new Container();
 
-$container
-    ->set(Environment::class, $twig)
-    ->set(EntityManager::class, $entityManager)
-    ->set(ProductRepository::class, $productRepository);
+try {
+    $container
+        ->set(Environment::class, $twig)
+        ->set(EntityManager::class, $entityManager)
+        ->set(ProductRepository::class, $productRepository);
+} catch (ServiceExistsException $e) {
+    echo $e->getCode() . ' - ' . $e->getMessage() . '<br />' . var_dump($e);
+}
 
 // ROUTER ---------------------------------------------------------------------
 
 $router = new Router($container);
-
-$router
-    ->addRoute(
-        new Route('/', 'home', 'GET', IndexController::class, 'home')
-    )
-    ->addRoute(
-        new Route('/contact', 'contact', 'GET', IndexController::class, 'contact')
-    )
-    ->addRoute(
-        new Route('/products/new', 'products_new', 'GET', ProductController::class, 'new')
-    )
-    ->addRoute(
-        new Route('/products', 'products_list', 'GET', ProductController::class, 'list')
-    );
+$router->extractRoutesFromAttributes();
+//$router
+//    ->addRoute(
+//        new Route('/', 'home', 'GET', IndexController::class, 'home')
+//    )
+//    ->addRoute(
+//        new Route('/contact', 'contact', 'GET', IndexController::class, 'contact')
+//    )
+//    ->addRoute(
+//        new Route('/products/new', 'products_new', 'GET', ProductController::class, 'new')
+//    )
+//    ->addRoute(
+//        new Route('/products', 'products_list', 'GET', ProductController::class, 'list')
+//    );
 
 //  ---------------------------------------------------------------------
 
@@ -119,6 +127,6 @@ try {
     echo "Page non trouvée";
 } catch (Exception $e) {
     http_response_code(500);
-    var_dump($e);
+    var_dump($e->getMessage());
     echo "Erreur interne, veuillez contacter l'administrateur";
 }
