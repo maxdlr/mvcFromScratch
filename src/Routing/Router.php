@@ -2,49 +2,39 @@
 
 namespace App\Routing;
 
-use App\Controller\IndexController;
 use App\Exception\RouteNotFoundException;
-use App\Routing\Route;
+use App\Routing\Attribute\AttributeManager;
+use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 
-class Router
+readonly class Router
 {
-    /**
-     * @var Route[]
-     */
-    private array $routes = [];
-
+    private AttributeManager $attributeManager;
     public function __construct(
         private ContainerInterface $container,
     )
     {
+        $this->attributeManager = new AttributeManager();
     }
 
     /**
      * @throws ReflectionException
+     * @throws Exception
      */
-    public function extractRoutesFromAttributes(): array
+    private function extractRoutesFromAttributes(): array
     {
-        $controllerFiles = array_diff(
-            scandir(
-                __DIR__ . '/../Controller'
-            ),
-            ['.', '..', 'AbstractController.php']
+        $controllerNames = $this->attributeManager->getPhpFileNamesFromDir(
+            __DIR__ . '/../Controller',
+            ['AbstractController.php']
         );
 
-        $controllerNames = [];
-        foreach ($controllerFiles as $file) {
-            $controllerNames[] = str_replace('.php', '', $file);
-        }
-
+        $routes = [];
         foreach ($controllerNames as $controller) {
             $controllerInfo = new ReflectionClass("App\Controller\\" . $controller);
-
             $routedMethods = $controllerInfo->getMethods();
 
             foreach ($routedMethods as $routedMethod) {
@@ -61,16 +51,19 @@ class Router
                         $routedMethod->getName(),
                     );
 
-                    $this->routes[] = $route;
+                    $routes[] = $route;
                 }
             }
         }
-        return $this->routes;
+        return $routes;
     }
 
-    public function getRoute(string $uri, string $httpMethod): ?Route
+    /**
+     * @throws ReflectionException
+     */
+    private function getRoute(string $uri, string $httpMethod): ?Route
     {
-        foreach ($this->routes as $savedRoute) {
+        foreach ($this->extractRoutesFromAttributes() as $savedRoute) {
 
             if ($savedRoute->getUri() === $uri && $savedRoute->getHttpMethod() === $httpMethod) {
                 return $savedRoute;
@@ -107,7 +100,7 @@ class Router
     /**
      * @throws ReflectionException
      */
-    public function getMethodParams(string $method): array
+    private function getMethodParams(string $method): array
     {
         $methodInfos = new ReflectionMethod($method);
         $methodParameters = $methodInfos->getParameters();
