@@ -13,32 +13,19 @@ use Symfony\Component\Dotenv\Dotenv;
 
 class DatabaseManager
 {
-    public function getDatabaseParameters(): array
+    public function getEntityManager(): EntityManager
     {
-        $dotenv = new Dotenv();
         try {
-            $dotenv->loadEnv(__DIR__ . '/../../../.env');
-        } catch (Exception $e) {
+            return new EntityManager(
+                $this->connect(),
+                $this->setupOrm()
+            );
+        } catch (MissingMappingDriverImplementation $e) {
             var_dump($e);
+            exit();
         }
-
-        return [
-            'driver'   => $_ENV['DB_DRIVER'],
-            'user'     => $_ENV['DB_USER'],
-            'password' => $_ENV['DB_PASSWORD'],
-            'dbname'   => $_ENV['DB_NAME'],
-            'host'     => $_ENV['DB_HOST'],
-            'port'     => $_ENV['DB_PORT'],
-        ];
     }
 
-    public function setupOrm(): Configuration
-    {
-        $paths = [__DIR__ . '/../src/Entity'];
-        $isDevMode = $_ENV['APP_ENV'] === 'dev';
-
-        return ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
-    }
     public function connect(): Connection
     {
         try {
@@ -52,16 +39,30 @@ class DatabaseManager
         }
     }
 
-    public function getEntityManager(): EntityManager
+    public function getDatabaseParameters(): array
     {
+        $dotenv = new Dotenv();
         try {
-            return new EntityManager(
-                $this->connect(),
-                $this->setupOrm()
-            );
-        } catch (MissingMappingDriverImplementation $e) {
+            $dotenv->loadEnv(__DIR__ . '/../../../.env');
+        } catch (Exception $e) {
             var_dump($e);
-            exit();
         }
+
+        return [
+            'driver' => $_ENV['DB_DRIVER'],
+            'user' => $_ENV['DB_USER'],
+            'password' => $_ENV['DB_PASSWORD'],
+            'dbname' => $_ENV['DB_NAME'],
+            'host' => $_ENV['DB_HOST'],
+            'port' => $_ENV['DB_PORT'],
+        ];
+    }
+
+    public function setupOrm(): Configuration
+    {
+        $paths = [__DIR__ . '/../../../src/Entity'];
+        $isDevMode = $_ENV['APP_ENV'] === 'dev';
+
+        return ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
     }
 }

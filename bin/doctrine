@@ -1,9 +1,11 @@
 #!/usr/bin/env php
 <?php
 
+use App\Routing\Service\DatabaseManager;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 
 require_once __DIR__ . '/../public/index.php';
 
-ConsoleRunner::run(new SingleManagerProvider($entityManager));
+$dbMan = new DatabaseManager();
+ConsoleRunner::run(new SingleManagerProvider($dbMan->getEntityManager()));

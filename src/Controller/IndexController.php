@@ -6,7 +6,7 @@ use App\Routing\Attribute\Route;
 
 class IndexController extends AbstractController
 {
-    #[Route('/', name: 'app_home', httpMethod: 'GET')]
+    #[Route('/', name: 'app_home', httpMethod: ['GET'])]
     public function home(): string
     {
         $message = 'Page Home';
@@ -15,8 +15,9 @@ class IndexController extends AbstractController
             'message' => $message
         ]);
     }
-    #[Route('/contact', name: 'app_contact', httpMethod: 'GET')]
-    public function contact() : string
+
+    #[Route('/contact', name: 'app_contact', httpMethod: ['GET'])]
+    public function contact(): string
     {
         $message = 'Page Contact';
 

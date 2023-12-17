@@ -10,8 +10,8 @@ if (php_sapi_name() !== 'cli' && preg_match('/\.(ico|png|jpg|jpeg|css|js|gif)$/'
     return false;
 }
 
-$containerManager = new ContainerManager();
 try {
+    $containerManager = new ContainerManager();
     $router = new Router($containerManager->buildContainer());
 } catch (Exception $e) {
     var_dump($e);
