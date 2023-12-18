@@ -46,9 +46,14 @@
         <li style="padding: 0 10px">
             <a href="/product/fake10">Créer 10</a>
         </li>
-        <li style="padding: 0 10px">
-            <a href="/product/deleteAll">Tout supprimer</a>
-        </li>
+        {% if products %}
+            <li style="padding: 0 10px">
+                <a href="/product/deleteAll">Tout supprimer</a>
+            </li>
+            <li style="padding: 0 10px">
+                <a href="/">Voir mon recap</a>
+            </li>
+        {% endif %}
     </ul>
 
     <section style="display: flex; justify-content: center; align-items: start; flex-wrap: wrap;">
