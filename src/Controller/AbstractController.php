@@ -19,10 +19,14 @@ abstract class AbstractController
 
     #[NoReturn] protected function dd(mixed $expression): null
     {
-        foreach ($expression as $key => $exp) {
-            var_dump($key . ' ----- ' . $exp);
+        if (is_array($expression)) {
+            foreach ($expression as $key => $exp) {
+                var_dump($key . ' ---> ' . $exp);
+            }
+        } else {
+            var_dump($expression);
         }
-        exit();
 
+        exit();
     }
 }

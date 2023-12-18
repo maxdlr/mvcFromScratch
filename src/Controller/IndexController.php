@@ -2,27 +2,35 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository;
 use App\Routing\Attribute\Route;
 
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'app_home', httpMethod: ['GET'])]
-    public function home(): string
+    public function home(ProductRepository $productRepository): string
     {
-        $message = 'Page Home';
+        $products = $productRepository->findAll();
+        $countOfProducts = count($products);
+
+        $sumOfAllProductPrices = 0;
+        foreach ($products as $product) {
+            $sumOfAllProductPrices += $product->getPrice();
+        }
 
         return $this->twig->render('index/home.html.twig', [
-            'message' => $message
+            'countOfProducts' => $countOfProducts,
+            'sumOfAllProductPrices' => $sumOfAllProductPrices,
         ]);
     }
 
     #[Route('/contact', name: 'app_contact', httpMethod: ['GET'])]
     public function contact(): string
     {
-        $message = 'Page Contact';
+        $content = 'Page Contact';
 
         return $this->twig->render('index/contact.html.twig', [
-            'message' => $message
+            'content' => $content
         ]);
     }
 }
