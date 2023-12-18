@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Routing\Service;
+namespace App\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -43,7 +43,7 @@ class DatabaseManager
     {
         $dotenv = new Dotenv();
         try {
-            $dotenv->loadEnv(__DIR__ . '/../../../.env');
+            $dotenv->loadEnv(__DIR__ . '/../../.env');
         } catch (Exception $e) {
             var_dump($e);
         }
@@ -60,7 +60,7 @@ class DatabaseManager
 
     public function setupOrm(): Configuration
     {
-        $paths = [__DIR__ . '/../../../src/Entity'];
+        $paths = [__DIR__ . '/../Entity'];
         $isDevMode = $_ENV['APP_ENV'] === 'dev';
 
         return ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);

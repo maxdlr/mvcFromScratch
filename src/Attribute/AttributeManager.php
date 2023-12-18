@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Routing\Attribute;
+namespace App\Attribute;
 
 use Exception;
 
@@ -11,7 +11,7 @@ class AttributeManager
      */
     public function getPhpFileNamesFromDir(
         string $directory,
-        array $exclude = [],
+        array  $exclude = [],
     ): array|false
     {
         $files = array_diff(

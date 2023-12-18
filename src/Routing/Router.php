@@ -2,9 +2,8 @@
 
 namespace App\Routing;
 
+use App\Attribute\AttributeManager;
 use App\Exception\RouteNotFoundException;
-use App\Routing\Attribute\AttributeManager;
-use Couchbase\ValueRecorder;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -85,7 +84,7 @@ readonly class Router
 
                     if (!$routedMethod->isConstructor() &&
                         $routedMethod->isPublic() &&
-                        $attributes->getName() === Attribute\Route::class
+                        $attributes->getName() === \App\Attribute\Route::class
                     ) {
                         $route = $attributes->newInstance();
 

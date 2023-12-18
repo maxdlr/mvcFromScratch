@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
+use App\Attribute\Route;
 use App\Repository\ProductRepository;
-use App\Routing\Attribute\Route;
 
 class IndexController extends AbstractController
 {

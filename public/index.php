@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use App\DependencyInjection\ContainerManager;
 use App\Exception\RouteNotFoundException;
 use App\Routing\Router;
-use App\Routing\Service\ContainerManager;
 
 if (php_sapi_name() !== 'cli' && preg_match('/\.(ico|png|jpg|jpeg|css|js|gif)$/', $_SERVER['REQUEST_URI'])) {
     return false;

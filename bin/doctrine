@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use App\Routing\Service\DatabaseManager;
+use App\Service\DatabaseManager;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 

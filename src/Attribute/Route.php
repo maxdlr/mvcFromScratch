@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Routing\Attribute;
+namespace App\Attribute;
 
 use Attribute;
 

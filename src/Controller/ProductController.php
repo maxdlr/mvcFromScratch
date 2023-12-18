@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Attribute\Route;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use App\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;

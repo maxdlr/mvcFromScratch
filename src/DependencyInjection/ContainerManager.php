@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Routing\Service;
+namespace App\DependencyInjection;
 
-use App\DependencyInjection\Container;
-use App\DependencyInjection\ServiceExistsException;
-use App\Routing\Attribute\AttributeManager;
+use App\Attribute\AttributeManager;
+use App\Service\DatabaseManager;
+use App\Service\EnvironmentManager;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -42,7 +42,7 @@ class ContainerManager
                 ->set(Environment::class, $this->twig)
                 ->set(EntityManager::class, $this->entityManager);
 
-            for ($i=0; $i < count($repositoriesFQCN); $i++) {
+            for ($i = 0; $i < count($repositoriesFQCN); $i++) {
                 $newRepo = new $repositoryObjects[$i]($this->entityManager);
                 $container->set($repositoriesFQCN[$i], $newRepo);
             }
@@ -64,10 +64,20 @@ class ContainerManager
         foreach ($entityFileNames as $name) {
             $entityInfo = new ReflectionClass("App\Entity\\" . $name);
             $entityClassAttribute = $entityInfo->getAttributes('Doctrine\ORM\Mapping\Entity')[0];
-            ['repositoryClass' => $repositoryFQCNs[]] =  $entityClassAttribute->getArguments();
+            ['repositoryClass' => $repositoryFQCNs[]] = $entityClassAttribute->getArguments();
         }
 
         return $repositoryFQCNs;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getEntityFileNames(): array
+    {
+        return $this->attributeManager->getPhpFileNamesFromDir(
+            __DIR__ . '/../Entity'
+        );
     }
 
     /**
@@ -82,15 +92,5 @@ class ContainerManager
             $repositoryOjects[] = $entityInfo->newInstanceWithoutConstructor();
         }
         return $repositoryOjects;
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function getEntityFileNames(): array
-    {
-        return $this->attributeManager->getPhpFileNamesFromDir(
-            __DIR__ . '/../../Entity'
-        );
     }
 }
