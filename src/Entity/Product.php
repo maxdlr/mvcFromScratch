@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
 class Product
 {
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
-    private readonly int $id;
+    private int $id;
     #[ORM\Column(length: 255)]
     private string $name;
     #[ORM\Column(length: 500)]

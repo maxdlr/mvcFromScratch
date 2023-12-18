@@ -4,6 +4,7 @@ namespace App\Routing;
 
 use App\Exception\RouteNotFoundException;
 use App\Routing\Attribute\AttributeManager;
+use Couchbase\ValueRecorder;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -52,6 +53,7 @@ readonly class Router
      */
     private function getRoute(string $uri, string $httpMethod): ?Route
     {
+
         foreach ($this->extractRoutesFromAttributes() as $savedRoute) {
 
             if ($savedRoute->getUri() === $uri && in_array($httpMethod, $savedRoute->getHttpMethod())) {
@@ -78,24 +80,29 @@ readonly class Router
             $routedMethods = $controllerInfo->getMethods();
 
             foreach ($routedMethods as $routedMethod) {
-                if (!$routedMethod->isConstructor() &&
-                    $routedMethod->isPublic() &&
-                    $routedMethod->getAttributes()[0]->getName() === Attribute\Route::class
-                ) {
-                    $route = $routedMethod
-                        ->getAttributes('App\Routing\Attribute\Route')[0]?->newInstance();
 
-                    $route = new Route(
-                        $route->getUri(),
-                        $route->getName(),
-                        $route->getHttpMethod(),
-                        "App\Controller\\" . $routedMethod->getDeclaringClass()->getShortName(),
-                        $routedMethod->getName(),
-                    );
+                foreach ($routedMethod->getAttributes() as $attributes) {
 
-                    $routes[] = $route;
+                    if (!$routedMethod->isConstructor() &&
+                        $routedMethod->isPublic() &&
+                        $attributes->getName() === Attribute\Route::class
+                    ) {
+                        $route = $attributes->newInstance();
+
+                        $route = new Route(
+                            $route->getUri(),
+                            $route->getName(),
+                            $route->getHttpMethod(),
+                            "App\Controller\\" . $routedMethod->getDeclaringClass()->getShortName(),
+                            $routedMethod->getName(),
+                        );
+
+                        $routes[] = $route;
+                    }
                 }
             }
+
+
         }
         return $routes;
     }

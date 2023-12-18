@@ -8,7 +8,7 @@
 
     <h1>Ajouter un produit</h1>
 
-    <form action="/product/list" method="POST" enctype="multipart/form-data">
+    <form action="/products" method="POST" enctype="multipart/form-data">
 
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 50vw; margin: auto">
             <label for="file-upload">
@@ -32,7 +32,7 @@
             {% for message in messages %}
                 <li>
                     {{ message.type }} - {{ message.content }} -
-                    <a href="/product/list">
+                    <a href="/products">
                         <button>Rafraichir</button>
                     </a>
                 </li>
@@ -42,7 +42,16 @@
 
     <h1>Liste des produits</h1>
 
-    <section style="display: flex; justify-content: start; align-items: start; flex-wrap: wrap">
+    <ul style="list-style: none; display: flex; justify-content: center; align-items: start">
+        <li style="padding: 0 10px">
+            <a href="/product/fake10">Créer 10</a>
+        </li>
+        <li style="padding: 0 10px">
+            <a href="/product/deleteAll">Tout supprimer</a>
+        </li>
+    </ul>
+
+    <section style="display: flex; justify-content: center; align-items: start; flex-wrap: wrap;">
         {% for product in products %}
 
             <article class="product-item"

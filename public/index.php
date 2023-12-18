@@ -6,7 +6,6 @@ use App\Exception\RouteNotFoundException;
 use App\Routing\Router;
 use App\Routing\Service\ContainerManager;
 
-session_start(['flashes' => 'flash']);
 if (php_sapi_name() !== 'cli' && preg_match('/\.(ico|png|jpg|jpeg|css|js|gif)$/', $_SERVER['REQUEST_URI'])) {
     return false;
 }
