@@ -66,24 +66,4 @@ class ProductController extends AbstractController
             'messages' => $messages,
         ]);
     }
-
-    #[Route('/product/new-success', name: 'app_product_new_success', httpMethod: ['GET', 'POST'])]
-    public function newSuccess(): string
-    {
-        $successMessage = "Votre produit a été mis en ligne avec success";
-
-        return $this->twig->render('product/new-success.html.twig', [
-            'successMessage' => $successMessage
-        ]);
-    }
-
-    #[Route('/product/new-fail', name: 'app_product_new_fail', httpMethod: ['GET', 'POST'])]
-    public function newFail(): string
-    {
-        $failMessage = "Erreur de soumission de formulaire.";
-
-        return $this->twig->render('product/new-fail.html.twig', [
-            'failMessage' => $failMessage
-        ]);
-    }
 }
